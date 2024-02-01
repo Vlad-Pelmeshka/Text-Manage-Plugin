@@ -15,7 +15,7 @@
                 <div class="result-column-header">
                     <h2>Title</h2>
                     <form class="text-manage-form-column" form-type="title" id="text-manage-form-title">
-                        <input type="text" id="replace-text-title" name="replace_text"  placeholder="new keyword...">
+                        <input type="text" id="replace-text-title" name="replace_text" placeholder="new keyword...">
                         <input type="submit" value="Replace" disabled>
                     </form>
                 </div>
@@ -28,7 +28,7 @@
                 <div class="result-column-header">
                     <h2>Content</h2>
                     <form class="text-manage-form-column" form-type="content" id="text-manage-form-content">
-                        <input type="text" id="replace-text-content" name="replace_text"  placeholder="new keyword...">
+                        <input type="text" id="replace-text-content" name="replace_text" placeholder="new keyword...">
                         <input type="submit" value="Replace" disabled>
                     </form>
                 </div>
@@ -41,7 +41,7 @@
                 <div class="result-column-header">
                     <h2>Meta Title</h2>
                     <form class="text-manage-form-column" form-type="meta-title" id="text-manage-form-meta-title">
-                        <input type="text" id="replace-text-meta-title" name="replace_text"  placeholder="new keyword...">
+                        <input type="text" id="replace-text-meta-title" name="replace_text" placeholder="new keyword...">
                         <input type="submit" value="Replace" disabled>
                     </form>
                 </div>
@@ -54,11 +54,11 @@
                 <div class="result-column-header">
                     <h2>Meta Description</h2>
                     <form class="text-manage-form-column" form-type="meta-description" id="text-manage-form-meta-description">
-                        <input type="text" id="replace-text-meta-description" name="replace_text"  placeholder="new keyword...">
+                        <input type="text" id="replace-text-meta-description" name="replace_text" placeholder="new keyword...">
                         <input type="submit" value="Replace" disabled>
                     </form>
                 </div>
-                
+
                 <div class="result-column-items" id="meta-description-results"></div>
             </div> <!-- #meta-description-column -->
 

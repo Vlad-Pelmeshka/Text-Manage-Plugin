@@ -19,16 +19,16 @@ jQuery(document).ready(function ($) {
                 search_text: searchText,
             },
             success: function (response) {
-                
+
                 $('.result-column-items').empty();
-    
+
                 addResultsToColumn(response.title, '#title-results', '#text-manage-form-title');
                 addResultsToColumn(response.content, '#content-results', '#text-manage-form-content');
                 addResultsToColumn(response.meta_title, '#meta-title-results', '#text-manage-form-meta-title');
                 addResultsToColumn(response.meta_description, '#meta-description-results', '#text-manage-form-meta-description');
-    
+
                 $('#search-nothing').toggle(!response.title.length && !response.content.length && !response.meta_title.length && !response.meta_description.length);
-                
+
                 $('#search-info').show();
                 $('#search-info-text').text(searchText);
             },
@@ -37,31 +37,31 @@ jQuery(document).ready(function ($) {
             },
         });
     }
-    
+
     function addResultsToColumn(results, columnId, formId) {
-        var column  = $(columnId);
-        var form    = $(formId);
-    
+        var column = $(columnId);
+        var form = $(formId);
+
         if (results.length > 0) {
-            
+
             form.find('input[type=submit]').prop('disabled', false);
-    
+
             $.each(results, function (index, post) {
                 var resultItem = $('<div class="result-item" post-id="' + post.ID + '"><div>' + post.result_string + '</div></div>');
                 column.append(resultItem);
             });
         } else {
-            
+
             form.find('input[type=submit]').prop('disabled', true);
-    
+
             column.append('<div class="no-matches">No matches found</div>');
         }
     }
-    
+
 
 
     $('.text-manage-form-column').on('submit', function (event) {
-        
+
         event.preventDefault();
         var type = $(this).attr('form-type');
 
@@ -71,9 +71,9 @@ jQuery(document).ready(function ($) {
 
         console.log(replaceText);
 
-        if(replaceText){
+        if (replaceText) {
             sendReplaceRequest(type, replaceText);
-        }else{
+        } else {
             $('form[form-type="' + type + '"] input[type="submit"]').attr('disabled', false);
         }
 

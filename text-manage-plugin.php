@@ -11,17 +11,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class Text_Manage_Plugin {
+class Text_Manage_Plugin
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-    
+
         add_action('wp_ajax_text_manage_search', array($this, 'ajax_text_manage_search_callback'));
         add_action('wp_ajax_text_manage_replace', array($this, 'ajax_text_manage_replace_callback'));
-     }
+    }
 
-    public function add_admin_menu() {
+    public function add_admin_menu()
+    {
 
         add_menu_page(
             'Text Management',
@@ -34,14 +37,16 @@ class Text_Manage_Plugin {
         );
     }
 
-    public function enqueue_scripts() {
-        
-        wp_enqueue_style('text-manage-plugin-style', plugin_dir_url(__FILE__) . 'dist/main.css', [] );
+    public function enqueue_scripts()
+    {
+
+        wp_enqueue_style('text-manage-plugin-style', plugin_dir_url(__FILE__) . 'dist/main.css', []);
         wp_enqueue_script('text-manage-plugin-script', plugin_dir_url(__FILE__) . 'dist/main.js', array('jquery'), '1.0', true);
     }
 
-    public function render_admin_page() {
-        
+    public function render_admin_page()
+    {
+
         $template_path = plugin_dir_path(__FILE__) . 'templates/admin-page-template.php';
 
         if (file_exists($template_path)) {
@@ -49,9 +54,10 @@ class Text_Manage_Plugin {
         }
     }
 
-    public function ajax_text_manage_search_callback() {
+    public function ajax_text_manage_search_callback()
+    {
         if (isset($_POST['search_text'])) {
-            
+
             global $wpdb;
             $search_text = sanitize_text_field($_POST['search_text']);
             $results = array(
@@ -60,7 +66,7 @@ class Text_Manage_Plugin {
                 'meta_title' => array(),
                 'meta_description' => array(),
             );
-    
+
             // Search in Title
             $title_posts = $wpdb->get_col($wpdb->prepare("
                 SELECT ID
@@ -68,13 +74,13 @@ class Text_Manage_Plugin {
                 WHERE post_type = 'post'
                 AND post_status = 'publish'
                 AND BINARY post_title LIKE BINARY '%" . $wpdb->esc_like($search_text) . "%'"));
-                
+
             foreach ($title_posts as $post_id) {
                 $post = get_post($post_id);
                 $post->result_string = $this->strip_found_string(wp_strip_all_tags($post->post_title), $search_text);
                 $results['title'][] = $post;
             }
-    
+
             // Search in Content
             $content_posts = $wpdb->get_col($wpdb->prepare("
                 SELECT ID
@@ -87,7 +93,7 @@ class Text_Manage_Plugin {
                 $post->result_string = $this->strip_found_string(wp_strip_all_tags($post->post_content), $search_text);
                 $results['content'][] = $post;
             }
-    
+
             // Search in Meta-title
             $meta_title_posts = $wpdb->get_col($wpdb->prepare("
                 SELECT post_id
@@ -100,7 +106,7 @@ class Text_Manage_Plugin {
                 $post->result_string = $this->strip_found_string(wp_strip_all_tags($meta_title), $search_text);
                 $results['meta_title'][] = $post;
             }
-    
+
             // Search in Meta-description
             $meta_description_posts = $wpdb->get_col($wpdb->prepare("
                 SELECT post_id
@@ -113,15 +119,16 @@ class Text_Manage_Plugin {
                 $post->result_string = $this->strip_found_string(wp_strip_all_tags($meta_description), $search_text);
                 $results['meta_description'][] = $post;
             }
-    
+
             wp_send_json($results);
         }
     }
 
-    public function ajax_text_manage_replace_callback() {
+    public function ajax_text_manage_replace_callback()
+    {
 
         // var_dump($_POST);
-            
+
         if (isset($_POST['type'], $_POST['replace_text'])) {
 
             global $wpdb;
@@ -130,7 +137,7 @@ class Text_Manage_Plugin {
             $replaceText    = sanitize_text_field($_POST['replace_text']);
             $replaced       = sanitize_text_field($_POST['replaced_text']);
 
-            switch($type){ 
+            switch ($type) {
                 case 'content':
                     $wpdb->query(
                         $wpdb->prepare("
@@ -141,7 +148,7 @@ class Text_Manage_Plugin {
                         AND post_content LIKE BINARY '%" . $wpdb->esc_like($replaced) . "%'")
                     );
                     break;
-                    
+
                 case 'title':
                     $wpdb->query(
                         $wpdb->prepare("
@@ -173,51 +180,50 @@ class Text_Manage_Plugin {
                     );
                     break;
             }
-    
+
             wp_send_json('Success');
         }
     }
 
 
-    private function strip_found_string($text, $target_char, $distance = 10) {
+    private function strip_found_string($text, $target_char, $distance = 10)
+    {
 
         $len        = strlen($target_char);
-        $result     = ''; 
-        $matches    = array(); 
-    
+        $result     = '';
+        $matches    = array();
+
         $last_match_pos = 0;
-    
+
         preg_match_all("/$target_char/", $text, $matches, PREG_OFFSET_CAPTURE);
-    
+
         foreach ($matches[0] as $key => $match) {
-    
-            $position   = $match[1]; 
-            $start      = max(0, $position - $distance );
+
+            $position   = $match[1];
+            $start      = max(0, $position - $distance);
             $end        = $position + $len;
-    
-            if($last_match_pos == 0){
-    
-                $result .= ($start > $last_match_pos ? '...' : '') . substr($text, $start, $position - $start + $len  );
-    
-            }  else{
-    
-                if($start > $last_match_pos + $distance){
+
+            if ($last_match_pos == 0) {
+
+                $result .= ($start > $last_match_pos ? '...' : '') . substr($text, $start, $position - $start + $len);
+            } else {
+
+                if ($start > $last_match_pos + $distance) {
                     $result .= substr($text, $last_match_pos, $distance) . '...' . substr($text, $start, $position - $start + $len);
-                }else{
+                } else {
                     $result .= substr($text, $last_match_pos, $position - $last_match_pos + $len);
                 }
             }
-    
+
             $last_match_pos = $end;
-            
         }
-    
-    
-    
+
+
+
         $result .= substr($text, $last_match_pos, $distance);
         $result .= (strlen(substr($text, $last_match_pos)) > $distance) ? '...' : '';
         $result = preg_replace("/$target_char/", '<b>$0</b>', $result);
-    
+
         return $result;
     }
 }
